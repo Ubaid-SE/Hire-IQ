@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../api/axios'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 
 function CandidateDetail() {
   const navigate = useNavigate()
@@ -60,6 +61,23 @@ function CandidateDetail() {
     return 'bg-red-500/20 text-red-400 border border-red-500/30'
   }
 
+  // Score data for pie chart
+  const getScoreData = () => {
+    if (!candidate?.match_analysis) return []
+    
+    const skillsScore = candidate.match_analysis?.skills_match?.match_percentage || 0
+    const experienceScore = candidate.match_analysis?.experience_match?.is_match ? 100 : 0
+    const educationScore = candidate.match_analysis?.education_match?.is_suitable ? 100 : 0
+
+    return [
+      { name: 'Skills', value: skillsScore },
+      { name: 'Experience', value: experienceScore },
+      { name: 'Education', value: educationScore }
+    ]
+  }
+
+  const COLORS = ['#3b82f6', '#10b981', '#f59e0b']
+
   if (loading) return (
     <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
       <div className="text-center">
@@ -111,7 +129,7 @@ function CandidateDetail() {
         </div>
       </nav>
 
-      <div className="p-8 max-w-4xl mx-auto space-y-6">
+      <div className="p-8 max-w-5xl mx-auto space-y-6">
 
         {/* Header Card */}
         <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800">
@@ -154,37 +172,70 @@ function CandidateDetail() {
           </div>
         </div>
 
-        {/* Score Breakdown */}
+        {/* Score Breakdown with Pie Chart */}
         <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800">
-          <h3 className="font-semibold text-lg mb-4">📊 Match Analysis</h3>
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-gray-800 p-4 rounded-xl">
-              <p className="text-gray-400 text-sm mb-1">Skills Match</p>
-              <p className={`text-3xl font-bold ${getScoreColor(candidate.match_analysis?.skills_match?.match_percentage)}`}>
-                {candidate.match_analysis?.skills_match?.match_percentage}%
-              </p>
-              <div className="h-2 bg-gray-700 rounded-full mt-2 overflow-hidden">
-                <div
-                  className={`h-full rounded-full ${getScoreBg(candidate.match_analysis?.skills_match?.match_percentage)}`}
-                  style={{ width: `${candidate.match_analysis?.skills_match?.match_percentage}%` }}
-                ></div>
-              </div>
+          <h3 className="font-semibold text-lg mb-6">📊 Match Analysis</h3>
+          <div className="grid grid-cols-2 gap-8">
+            {/* Pie Chart */}
+            <div className="flex items-center justify-center">
+              <ResponsiveContainer width="100%" height={280}>
+                <PieChart>
+                  <Pie
+                    data={getScoreData()}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, value }) => `${name}: ${value}%`}
+                  >
+                    {COLORS.map((color, index) => (
+                      <Cell key={`cell-${index}`} fill={color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => `${value}%`} />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
 
-            <div className="bg-gray-800 p-4 rounded-xl">
-              <p className="text-gray-400 text-sm mb-1">Experience</p>
-              <p className={`text-3xl font-bold ${candidate.match_analysis?.experience_match?.is_match ? 'text-green-400' : 'text-red-400'}`}>
-                {candidate.match_analysis?.experience_match?.is_match ? '✅ Match' : '❌ No Match'}
-              </p>
-              <p className="text-gray-500 text-xs mt-2">
-                Required: {candidate.match_analysis?.experience_match?.required}
-              </p>
+            {/* Stats */}
+            <div className="space-y-3">
+              <div className="bg-gray-800 p-4 rounded-xl">
+                <p className="text-gray-400 text-sm mb-1">Skills Match</p>
+                <p className={`text-3xl font-bold ${getScoreColor(candidate.match_analysis?.skills_match?.match_percentage)}`}>
+                  {candidate.match_analysis?.skills_match?.match_percentage}%
+                </p>
+                <div className="h-2 bg-gray-700 rounded-full mt-2 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${getScoreBg(candidate.match_analysis?.skills_match?.match_percentage)}`}
+                    style={{ width: `${candidate.match_analysis?.skills_match?.match_percentage}%` }}
+                  ></div>
+                </div>
+              </div>
+
+              <div className="bg-gray-800 p-4 rounded-xl">
+                <p className="text-gray-400 text-sm mb-1">Experience</p>
+                <p className={`text-3xl font-bold ${candidate.match_analysis?.experience_match?.is_match ? 'text-green-400' : 'text-red-400'}`}>
+                  {candidate.match_analysis?.experience_match?.is_match ? '✅ Match' : '❌ No Match'}
+                </p>
+                <p className="text-gray-500 text-xs mt-2">
+                  Required: {candidate.match_analysis?.experience_match?.required}
+                </p>
+              </div>
+
+              <div className="bg-gray-800 p-4 rounded-xl">
+                <p className="text-gray-400 text-sm mb-1">Education</p>
+                <p className={`text-3xl font-bold ${candidate.match_analysis?.education_match?.is_suitable ? 'text-green-400' : 'text-red-400'}`}>
+                  {candidate.match_analysis?.education_match?.is_suitable ? '✅ Suitable' : '❌ Not Suitable'}
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Missing Skills */}
           {candidate.match_analysis?.skills_match?.missing?.length > 0 && (
-            <div className="mt-4">
+            <div className="mt-6">
               <p className="text-gray-400 text-sm mb-2">❌ Missing Skills</p>
               <div className="flex gap-2 flex-wrap">
                 {candidate.match_analysis.skills_match.missing.map(skill => (
@@ -216,28 +267,32 @@ function CandidateDetail() {
         </div>
 
         {/* Strengths & Weaknesses */}
-        {candidate.parsed_data?.strengths && (
+        {(candidate.parsed_data?.strengths || candidate.parsed_data?.weaknesses) && (
           <div className="grid grid-cols-2 gap-6">
-            <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800">
-              <h3 className="font-semibold text-lg mb-4 text-green-400">💪 Strengths</h3>
-              <ul className="space-y-2">
-                {candidate.parsed_data.strengths?.map((s, i) => (
-                  <li key={i} className="text-gray-300 text-sm flex items-start gap-2">
-                    <span className="text-green-400 mt-0.5">✓</span> {s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800">
-              <h3 className="font-semibold text-lg mb-4 text-red-400">⚠️ Weaknesses</h3>
-              <ul className="space-y-2">
-                {candidate.parsed_data.weaknesses?.map((w, i) => (
-                  <li key={i} className="text-gray-300 text-sm flex items-start gap-2">
-                    <span className="text-red-400 mt-0.5">✗</span> {w}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {candidate.parsed_data?.strengths && (
+              <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800">
+                <h3 className="font-semibold text-lg mb-4 text-green-400">💪 Strengths</h3>
+                <ul className="space-y-2">
+                  {candidate.parsed_data.strengths?.map((s, i) => (
+                    <li key={i} className="text-gray-300 text-sm flex items-start gap-2">
+                      <span className="text-green-400 mt-0.5">✓</span> {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {candidate.parsed_data?.weaknesses && (
+              <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800">
+                <h3 className="font-semibold text-lg mb-4 text-red-400">⚠️ Weaknesses</h3>
+                <ul className="space-y-2">
+                  {candidate.parsed_data.weaknesses?.map((w, i) => (
+                    <li key={i} className="text-gray-300 text-sm flex items-start gap-2">
+                      <span className="text-red-400 mt-0.5">✗</span> {w}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         )}
 

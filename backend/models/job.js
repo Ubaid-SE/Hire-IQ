@@ -31,6 +31,13 @@ const jobSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+
+  // Job status — Active/Closed
+  status: {
+    type: String,
+    enum: ['Active', 'Closed'],
+    default: 'Active'
   }
 
 }, { timestamps: true })

@@ -34,6 +34,18 @@ function Jobs() {
     }
   }
 
+  const toggleJobStatus = async (e, jobId, currentStatus) => {
+    e.stopPropagation()
+    const newStatus = currentStatus === 'Active' ? 'Closed' : 'Active'
+    
+    try {
+      await API.patch(`/jobs/${jobId}/status`, { status: newStatus })
+      fetchJobs()
+    } catch (err) {
+      alert('Error: ' + err.message)
+    }
+  }
+
   const filteredJobs = jobs.filter(job =>
     job.title.toLowerCase().includes(search.toLowerCase())
   )
@@ -117,9 +129,18 @@ function Jobs() {
                         💼
                       </div>
                       <div>
-                        <h3 className="text-lg font-semibold group-hover:text-blue-400 transition">
-                          {job.title}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-semibold group-hover:text-blue-400 transition">
+                            {job.title}
+                          </h3>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                            job.status === 'Active'
+                              ? 'bg-green-500/20 text-green-400'
+                              : 'bg-red-500/20 text-red-400'
+                          }`}>
+                            {job.status === 'Active' ? '🟢 Active' : '🔴 Closed'}
+                          </span>
+                        </div>
                         <p className="text-gray-400 text-sm">
                           {job.experience_required} experience required
                         </p>
@@ -142,12 +163,24 @@ function Jobs() {
                     <span className="text-gray-500 text-xs">
                       📅 {new Date(job.createdAt).toLocaleDateString('en-PK')}
                     </span>
-                    <button
-                      onClick={(e) => deleteJob(e, job._id)}
-                      className="bg-red-600/10 hover:bg-red-600 border border-red-600/20 text-red-400 hover:text-white text-xs px-3 py-1.5 rounded-lg transition"
-                    >
-                      🗑️ Delete
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) => toggleJobStatus(e, job._id, job.status)}
+                        className={`text-xs px-3 py-1.5 rounded-lg transition border ${
+                          job.status === 'Active'
+                            ? 'bg-yellow-600/10 hover:bg-yellow-600 border-yellow-600/20 text-yellow-400 hover:text-white'
+                            : 'bg-green-600/10 hover:bg-green-600 border-green-600/20 text-green-400 hover:text-white'
+                        }`}
+                      >
+                        {job.status === 'Active' ? '⏸️ Close' : '▶️ Open'}
+                      </button>
+                      <button
+                        onClick={(e) => deleteJob(e, job._id)}
+                        className="bg-red-600/10 hover:bg-red-600 border border-red-600/20 text-red-400 hover:text-white text-xs px-3 py-1.5 rounded-lg transition"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

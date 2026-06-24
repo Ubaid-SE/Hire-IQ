@@ -4,18 +4,22 @@ const authMiddleware = require('../middleware/auth')
 const upload = require('../middleware/upload')
 const Candidate = require('../models/Candidate')
 const { 
-  uploadCV, 
+  uploadCV,
+  uploadBulkCV,
   getCandidates,
   getCandidateById
 } = require('../controllers/candidateController')
 
-// POST /api/candidates/upload — CV upload karo
+// Single CV upload
 router.post('/upload', authMiddleware, upload.single('cv'), uploadCV)
 
-// GET /api/candidates/job/:jobId — Job ke candidates
+// Bulk CV upload
+router.post('/upload-bulk', authMiddleware, upload.array('cvs', 10), uploadBulkCV)
+
+// Job ke candidates
 router.get('/job/:jobId', authMiddleware, getCandidates)
 
-// GET /api/candidates/:id — Ek candidate
+// Ek candidate
 router.get('/:id', authMiddleware, getCandidateById)
 
 // DELETE /api/candidates/:id

@@ -6,6 +6,8 @@ import Jobs from './pages/Jobs'
 import CVUpload from './pages/CVUpload'
 import JobDetail from './pages/JobDetail'
 import CandidateDetail from './pages/CandidateDetail'
+import BulkUpload from './pages/BulkUpload'
+
 
 function App() {
   const token = localStorage.getItem('token')
@@ -21,6 +23,7 @@ function App() {
        <Route path="/candidates/:id" element={token ? <CandidateDetail /> : <Navigate to="/login" />} />
         <Route path="/jobs" element={token ? <Jobs /> : <Navigate to="/login" />} />
       <Route path="/jobs/:jobId" element={token ? <JobDetail /> : <Navigate to="/login" />} />
+     <Route path="/jobs/:jobId/bulk-upload" element={token ? <BulkUpload /> : <Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   )

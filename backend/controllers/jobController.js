@@ -65,6 +65,43 @@ const getJobById = async (req, res) => {
   }
 }
 
+// Job status update karna (Active/Closed)
+const updateJobStatus = async (req, res) => {
+  try {
+    const { status } = req.body
+
+    // Status validation
+    if (!['Active', 'Closed'].includes(status)) {
+      return res.status(400).json({ 
+        message: 'Invalid status. Use Active or Closed' 
+      })
+    }
+
+    const job = await Job.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    )
+
+    if (!job) {
+      return res.status(404).json({ 
+        message: 'Job not found' 
+      })
+    }
+
+    res.json({
+      message: `Job status updated to ${status}!`,
+      job
+    })
+
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: error.message 
+    })
+  }
+}
+
 // Job delete karna
 const deleteJob = async (req, res) => {
   try {
@@ -80,4 +117,4 @@ const deleteJob = async (req, res) => {
   }
 }
 
-module.exports = { createJob, getAllJobs, getJobById, deleteJob }
+module.exports = { createJob, getAllJobs, getJobById, deleteJob, updateJobStatus }

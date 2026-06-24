@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import API from '../api/axios'
+import jsPDF from 'jspdf'
 
 function JobDetail() {
   const navigate = useNavigate()
@@ -26,6 +27,66 @@ function JobDetail() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const exportToPDF = () => {
+    const doc = new jsPDF()
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const pageHeight = doc.internal.pageSize.getHeight()
+    let yPosition = 20
+
+    // Header
+    doc.setFontSize(20)
+    doc.text('HireIQ Candidates Report', pageWidth / 2, yPosition, { align: 'center' })
+    yPosition += 10
+
+    // Job Info
+    doc.setFontSize(12)
+    doc.text(`Job: ${job?.title}`, 20, yPosition)
+    yPosition += 7
+    doc.setFontSize(10)
+    doc.text(`Experience Required: ${job?.experience_required}`, 20, yPosition)
+    yPosition += 7
+    doc.text(`Total Candidates: ${candidates.length}`, 20, yPosition)
+    yPosition += 12
+
+    // Table Header
+    doc.setFont(undefined, 'bold')
+    doc.setFontSize(10)
+    doc.text('Rank', 20, yPosition)
+    doc.text('Name', 40, yPosition)
+    doc.text('Email', 100, yPosition)
+    doc.text('Score', 160, yPosition)
+    doc.text('Recommendation', 180, yPosition)
+    yPosition += 8
+
+    // Table Data
+    doc.setFont(undefined, 'normal')
+    candidates.forEach((candidate, index) => {
+      if (yPosition > pageHeight - 20) {
+        doc.addPage()
+        yPosition = 20
+      }
+
+      doc.setFontSize(9)
+      doc.text(`${index + 1}`, 20, yPosition)
+      doc.text(candidate.name, 40, yPosition)
+      doc.text(candidate.email, 100, yPosition)
+      doc.text(`${candidate.overall_score}%`, 160, yPosition)
+      
+      const recText = candidate.recommendation === 'Highly Recommended' ? '✓ Highly Rec.' : 
+                      candidate.recommendation === 'Recommended' ? '✓ Recommended' : '✗ Not Rec.'
+      doc.text(recText, 180, yPosition)
+      yPosition += 8
+    })
+
+    // Footer
+    yPosition += 5
+    doc.setFontSize(8)
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 20, pageHeight - 10)
+
+    // Download
+    doc.save(`${job?.title}_candidates.pdf`)
   }
 
   const getScoreColor = (score) => {
@@ -62,12 +123,22 @@ function JobDetail() {
           </div>
           <h1 className="text-xl font-bold">HireIQ</h1>
         </div>
-        <button
-          onClick={() => navigate('/jobs')}
-          className="text-gray-400 hover:text-white transition"
-        >
-          ← Jobs
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={() => navigate('/jobs')}
+            className="text-gray-400 hover:text-white transition"
+          >
+            ← Jobs
+          </button>
+          {candidates.length > 0 && (
+            <button
+              onClick={exportToPDF}
+              className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm transition font-semibold"
+            >
+              📥 Export PDF
+            </button>
+          )}
+        </div>
       </nav>
 
       <div className="p-8 max-w-5xl mx-auto">
@@ -104,12 +175,21 @@ function JobDetail() {
               </div>
             </div>
 
-            <button
-              onClick={() => navigate(`/jobs/${jobId}/upload`)}
-              className="bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-xl transition font-semibold flex items-center gap-2 ml-4 whitespace-nowrap"
-            >
-              📤 Upload CV
-            </button>
+            {/* Upload Buttons */}
+            <div className="flex gap-2 ml-4">
+              <button
+                onClick={() => navigate(`/jobs/${jobId}/upload`)}
+                className="bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-xl transition font-semibold whitespace-nowrap"
+              >
+                📤 Single CV
+              </button>
+              <button
+                onClick={() => navigate(`/jobs/${jobId}/bulk-upload`)}
+                className="bg-purple-600 hover:bg-purple-700 px-5 py-2.5 rounded-xl transition font-semibold whitespace-nowrap"
+              >
+                📦 Bulk Upload
+              </button>
+            </div>
           </div>
         </div>
 
@@ -134,13 +214,22 @@ function JobDetail() {
             <p className="text-5xl mb-4">📄</p>
             <p className="text-gray-400 text-lg">Koi candidate nahi</p>
             <p className="text-gray-500 text-sm mb-4">CV upload karo analysis ke liye</p>
-            <button
-              onClick={() => navigate(`/jobs/${jobId}/upload`)}
-              className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl transition"
-            >
-              📤 Upload CV
-            </button>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => navigate(`/jobs/${jobId}/upload`)}
+                className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl transition"
+              >
+                📤 Single CV
+              </button>
+              <button
+                onClick={() => navigate(`/jobs/${jobId}/bulk-upload`)}
+                className="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-xl transition"
+              >
+                📦 Bulk Upload
+              </button>
+            </div>
           </div>
+
         ) : (
           <div className="grid gap-3">
             {candidates.map((c, index) => (
