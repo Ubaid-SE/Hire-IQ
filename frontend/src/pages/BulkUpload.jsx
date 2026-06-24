@@ -90,7 +90,7 @@ function BulkUpload() {
             <div className="mb-8">
               <h2 className="text-2xl font-bold">Bulk CV Upload 📦</h2>
               <p className="text-gray-400 mt-1">
-                Ek saath multiple CVs upload karo — AI sab analyze karega!
+                Upload multiple CV at a time — AI will analyze!
               </p>
             </div>
 
@@ -120,13 +120,13 @@ function BulkUpload() {
               />
               <p className="text-5xl mb-4">📂</p>
               <p className="text-gray-300 font-semibold text-lg">
-                Multiple CVs yahan drop karo
+                Drag & Drop multiple CV here
               </p>
               <p className="text-gray-500 text-sm mt-2">
-                ya click kar ke select karo
+                Or Click To Choose
               </p>
               <p className="text-gray-600 text-xs mt-3">
-                Max 10 PDFs — Har file max 5MB
+                Max 10 PDFs — Each file max 5MB
               </p>
             </div>
 
@@ -144,7 +144,7 @@ function BulkUpload() {
                     onClick={() => setFiles([])}
                     className="text-red-400 text-sm hover:text-red-300"
                   >
-                    Sab hatao
+                    Remove All
                   </button>
                 </div>
 
@@ -208,11 +208,11 @@ function BulkUpload() {
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  AI Analyze kar raha hai... ({files.length} CVs)
+                  AI is Analyzing... ({files.length} CVs)
                 </>
               ) : (
                 <>
-                  🚀 {files.length} CVs Upload & Analyze Karo
+                  🚀 {files.length} Upload CVs & Analyze
                 </>
               )}
             </button>
@@ -288,7 +288,7 @@ function BulkUpload() {
               onClick={() => { setResults(null); setFiles([]) }}
               className="w-full bg-gray-800 hover:bg-gray-700 p-4 rounded-xl transition"
             >
-              📦 Aur CVs Upload karo
+              📦 Upload more CVs
             </button>
           </div>
         )}

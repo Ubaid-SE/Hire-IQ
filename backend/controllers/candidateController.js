@@ -11,7 +11,7 @@ const uploadCV = async (req, res) => {
 
     if (!req.file) {
       return res.status(400).json({ 
-        message: 'CV file required hai!' 
+        message: 'CV file is required!' 
       })
     }
 
@@ -84,7 +84,7 @@ const uploadBulkCV = async (req, res) => {
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ 
-        message: 'Koi CV file nahi mili!' 
+        message: 'No CV files uploaded!' 
       })
     }
 

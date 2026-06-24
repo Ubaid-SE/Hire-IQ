@@ -89,7 +89,7 @@ function CVUpload() {
             <div className="mb-8">
               <h2 className="text-2xl font-bold">Upload CV</h2>
               <p className="text-gray-400 mt-1">
-                PDF CV upload karo — AI analyze karega!
+                Upload CV in PDF — AI will analyze!
               </p>
             </div>
 
@@ -127,20 +127,20 @@ function CVUpload() {
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                     <p className="text-gray-400 text-sm mt-3">
-                      Dusri file select karne ke liye click karo
+                      Click to select another file
                     </p>
                   </>
                 ) : (
                   <>
                     <p className="text-5xl mb-4">☁️</p>
                     <p className="text-gray-300 font-semibold text-lg">
-                      CV yahan drop karo
+                      Drag & Drop CV here
                     </p>
                     <p className="text-gray-500 text-sm mt-2">
-                      ya click kar ke select karo
+                      Or Click to Choose File
                     </p>
                     <p className="text-gray-600 text-xs mt-4">
-                      Sirf PDF — Max 5MB
+                      Only PDF — Max 5MB
                     </p>
                   </>
                 )}
@@ -156,8 +156,8 @@ function CVUpload() {
                   <>
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     <div>
-                      <p>AI Analyze kar raha hai...</p>
-                      <p className="text-blue-200 text-xs">1-2 minutes lag sakte hain</p>
+                      <p>AI is Analyzing...</p>
+                      <p className="text-blue-200 text-xs">Might take 1-2 min</p>
                     </div>
                   </>
                 ) : (
@@ -172,15 +172,15 @@ function CVUpload() {
               {!loading && (
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
                   <p className="text-blue-400 text-sm font-semibold mb-2">
-                    🤖 AI Kya Karega?
+                    🤖 What Ai will do?
                   </p>
                   <ul className="space-y-1">
                     {[
-                      'CV se data extract karega',
-                      'Job requirements se match karega',
-                      'Score calculate karega',
-                      'Interview questions generate karega',
-                      'Email draft taiyar karega'
+                      'Extract data from CV',
+                      'Match job requirements',
+                      'Calculate Score',
+                      'Generate Interview Questions',
+                      'Create An Email Draft'
                     ].map((item, i) => (
                       <li key={i} className="text-gray-400 text-xs flex items-center gap-2">
                         <span className="text-blue-400">→</span> {item}
@@ -198,11 +198,11 @@ function CVUpload() {
                   </p>
                   <ul className="space-y-2">
                     {[
-                      'CV Parser Agent — Text extract kar raha hai',
-                      'Job Match Agent — Requirements compare kar raha hai',
-                      'Scoring Agent — Score calculate kar raha hai',
-                      'Interview Agent — Questions generate kar raha hai',
-                      'Email Agent — Draft taiyar kar raha hai'
+                      'CV Parser Agent — Extracting Text',
+                      'Job Match Agent — Comparing Requirements',
+                      'Scoring Agent — Calculating Score',
+                      'Interview Agent — Generating Questions',
+                      'Email Agent — Generating Draft'
                     ].map((step, i) => (
                       <li key={i} className="text-gray-500 text-xs flex items-center gap-2">
                         <div className="w-3 h-3 border border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>

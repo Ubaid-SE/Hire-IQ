@@ -21,7 +21,7 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'application/pdf') {
     cb(null, true)
   } else {
-    cb(new Error('Sirf PDF files allowed hain!'), false)
+    cb(new Error('Only PDF Files Allowed!'), false)
   }
 }
 

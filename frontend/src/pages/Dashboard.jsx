@@ -136,8 +136,7 @@ function Dashboard() {
             >
               <span className="text-2xl">➕</span>
               <div className="text-left">
-                <p className="font-semibold">New Job Post</p>
-                <p className="text-blue-200 text-xs">Job create karo</p>
+                <p className="font-semibold">Create New Job</p>
               </div>
             </button>
 
@@ -148,7 +147,6 @@ function Dashboard() {
               <span className="text-2xl">📋</span>
               <div className="text-left">
                 <p className="font-semibold">View All Jobs</p>
-                <p className="text-gray-400 text-xs">Sari jobs dekho</p>
               </div>
             </button>
           </div>
@@ -159,10 +157,10 @@ function Dashboard() {
           <h3 className="font-semibold text-lg mb-4">How HireIQ Works 🤖</h3>
           <div className="grid grid-cols-4 gap-4">
             {[
-              { icon: '💼', title: 'Job Post', desc: 'Job description likho' },
-              { icon: '📤', title: 'CV Upload', desc: 'Candidate CVs upload karo' },
-              { icon: '🤖', title: 'AI Analysis', desc: 'Agents CV analyze karen' },
-              { icon: '📊', title: 'Results', desc: 'Ranked candidates dekho' },
+              { icon: '💼', title: 'Post Job', desc: 'Give job description' },
+              { icon: '📤', title: 'Upload CV', desc: 'Upload Candidate Resume' },
+              { icon: '🤖', title: 'AI Analysis', desc: 'Agents will analyze Resume' },
+              { icon: '📊', title: 'Results', desc: 'Ranked candidates' },
             ].map((step, i) => (
               <div key={i} className="text-center p-4 bg-gray-800 rounded-xl">
                 <div className="text-3xl mb-2">{step.icon}</div>

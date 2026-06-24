@@ -204,7 +204,7 @@ function JobDetail() {
 
           {candidates.length > 0 && (
             <p className="text-gray-400 text-sm">
-              Score ke hisab se sorted ⬇️
+              Sorted According to Score⬇️
             </p>
           )}
         </div>
@@ -212,8 +212,8 @@ function JobDetail() {
         {candidates.length === 0 ? (
           <div className="text-center py-16 bg-gray-900 rounded-2xl border border-gray-800">
             <p className="text-5xl mb-4">📄</p>
-            <p className="text-gray-400 text-lg">Koi candidate nahi</p>
-            <p className="text-gray-500 text-sm mb-4">CV upload karo analysis ke liye</p>
+            <p className="text-gray-400 text-lg">No Candidate</p>
+            <p className="text-gray-500 text-sm mb-4">Upload CV for Analysis</p>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => navigate(`/jobs/${jobId}/upload`)}

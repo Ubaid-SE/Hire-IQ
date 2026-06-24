@@ -59,7 +59,7 @@ function NewJob() {
         <div className="mb-8">
           <h2 className="text-2xl font-bold">New Job Post ➕</h2>
           <p className="text-gray-400 mt-1">
-            Job details bharo — AI candidates analyze karega
+            Fill the Job details— AI will analyze Resume's
           </p>
         </div>
 
@@ -75,7 +75,7 @@ function NewJob() {
               value={form.title}
               onChange={(e) => setForm({...form, title: e.target.value})}
               className="w-full bg-gray-800 text-white p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
-              placeholder="React Developer"
+              placeholder="Data analyst/AI engineer........"
               required
             />
           </div>
@@ -89,7 +89,7 @@ function NewJob() {
               value={form.description}
               onChange={(e) => setForm({...form, description: e.target.value})}
               className="w-full bg-gray-800 text-white p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700 h-36 resize-none"
-              placeholder="Job ki responsibilities aur requirements detail mein likho..."
+              placeholder="Requirement and responsibilities of the job......"
               required
             />
             <p className="text-gray-600 text-xs mt-2">
@@ -111,7 +111,7 @@ function NewJob() {
               required
             />
             <p className="text-gray-600 text-xs mt-2">
-              Comma se alag karo
+              Put Comma to separate
             </p>
 
             {/* Skills Preview */}
@@ -155,7 +155,7 @@ function NewJob() {
               value={form.experience_required}
               onChange={(e) => setForm({...form, experience_required: e.target.value})}
               className="w-full bg-gray-800 text-white p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
-              placeholder="Ya khud likho: 2 years"
+              placeholder="Custom..."
               required
             />
           </div>
@@ -169,7 +169,7 @@ function NewJob() {
             {loading ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Job ban rahi hai...
+                Creating job...
               </>
             ) : (
               <>

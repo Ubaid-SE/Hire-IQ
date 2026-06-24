@@ -26,10 +26,10 @@ function Login() {
         await API.post('/auth/register', { name, email, password, company })
         setIsLogin(true)
         setError('')
-        alert('Account ban gaya! Ab login karo.')
+        alert('Account Created! Now try Logging in.')
       }
     } catch (err) {
-      setError(isLogin ? 'Email ya password galat hai!' : 'Registration failed!')
+      setError(isLogin ? 'Email or password is incorrect!' : 'Registration failed!')
     } finally {
       setLoading(false)
     }
@@ -89,15 +89,7 @@ function Login() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full bg-gray-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
-                  placeholder="Muhammad Ali"
-                  required
-                />
-              </div>
-              <div>
-                <label className="text-gray-400 text-sm mb-1 block">Company</label>
-                <input
-                  type="text"
-                  value={company}
+                  placeholder="Hassan Ahmad"
                   onChange={(e) => setCompany(e.target.value)}
                   className="w-full bg-gray-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
                   placeholder="Company name"
@@ -126,7 +118,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-gray-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
-              placeholder="••••••••"
+              placeholder="********"
               required
             />
           </div>
@@ -139,7 +131,7 @@ function Login() {
             {loading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                {isLogin ? 'Login ho raha hai...' : 'Account ban raha hai...'}
+                {isLogin ? 'Logging in...' : 'Registering Account...'}
               </>
             ) : (
               isLogin ? '🚀 Login' : '✨ Register'

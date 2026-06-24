@@ -25,7 +25,7 @@ function Jobs() {
 
   const deleteJob = async (e, jobId) => {
     e.stopPropagation()
-    if (!confirm('Job delete karna chahte ho?')) return
+    if (!confirm('Want to delete job?')) return
     try {
       await API.delete(`/jobs/${jobId}`)
       fetchJobs()
@@ -93,7 +93,7 @@ function Jobs() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="🔍 Job search karo..."
+            placeholder="🔍 Search job..."
             className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -106,12 +106,12 @@ function Jobs() {
         ) : filteredJobs.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-5xl mb-4">💼</p>
-            <p className="text-gray-400 text-lg">Koi job nahi mili</p>
+            <p className="text-gray-400 text-lg">No job</p>
             <button
               onClick={() => navigate('/jobs/new')}
               className="mt-4 bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl transition"
             >
-              Pehli Job Banao
+              Create first job
             </button>
           </div>
         ) : (
