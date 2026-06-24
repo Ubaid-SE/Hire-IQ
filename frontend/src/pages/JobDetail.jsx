@@ -28,71 +28,170 @@ function JobDetail() {
     }
   }
 
-  if (loading) return <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">Loading...</div>
+  const getScoreColor = (score) => {
+    if (score >= 70) return 'text-green-400'
+    if (score >= 50) return 'text-yellow-400'
+    return 'text-red-400'
+  }
+
+  const getBadgeStyle = (recommendation) => {
+    if (recommendation === 'Highly Recommended')
+      return 'bg-green-500/20 text-green-400 border border-green-500/30'
+    if (recommendation === 'Recommended')
+      return 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+    return 'bg-red-500/20 text-red-400 border border-red-500/30'
+  }
+
+  if (loading) return (
+    <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-gray-400">Loading...</p>
+      </div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-gray-950 text-white">
+
+      {/* Navbar */}
       <nav className="bg-gray-900 px-8 py-4 flex justify-between items-center border-b border-gray-800">
-        <h1 className="text-xl font-bold text-blue-400">HireIQ</h1>
-        <button onClick={() => navigate('/jobs')} className="text-gray-400 hover:text-white transition">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            🧠
+          </div>
+          <h1 className="text-xl font-bold">HireIQ</h1>
+        </div>
+        <button
+          onClick={() => navigate('/jobs')}
+          className="text-gray-400 hover:text-white transition"
+        >
           ← Jobs
         </button>
       </nav>
 
-      <div className="p-8">
-        {/* Job Info */}
-        <div className="bg-gray-900 p-6 rounded-xl border border-gray-800 mb-6">
+      <div className="p-8 max-w-5xl mx-auto">
+
+        {/* Job Card */}
+        <div className="bg-gray-900 p-6 rounded-2xl border border-gray-800 mb-6">
           <div className="flex justify-between items-start">
-            <div>
-              <h2 className="text-2xl font-bold">{job?.title}</h2>
-              <p className="text-gray-400 mt-1">{job?.experience_required} experience required</p>
-              <div className="flex gap-2 mt-3 flex-wrap">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 bg-blue-600/20 rounded-xl flex items-center justify-center text-2xl">
+                  💼
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">{job?.title}</h2>
+                  <p className="text-gray-400 text-sm">
+                    {job?.experience_required} experience required
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-gray-400 text-sm mb-4 ml-15">
+                {job?.description}
+              </p>
+
+              <div className="flex gap-2 flex-wrap">
                 {job?.required_skills?.map(skill => (
-                  <span key={skill} className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded-full">
+                  <span
+                    key={skill}
+                    className="bg-blue-500/10 text-blue-400 border border-blue-500/20 text-xs px-3 py-1 rounded-full"
+                  >
                     {skill}
                   </span>
                 ))}
               </div>
-              <p className="text-gray-400 mt-3 text-sm">{job?.description}</p>
             </div>
+
             <button
               onClick={() => navigate(`/jobs/${jobId}/upload`)}
-              className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition whitespace-nowrap"
+              className="bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-xl transition font-semibold flex items-center gap-2 ml-4 whitespace-nowrap"
             >
-              + Upload CV
+              📤 Upload CV
             </button>
           </div>
         </div>
 
-        {/* Candidates */}
-        <h3 className="text-xl font-bold mb-4">Candidates ({candidates.length})</h3>
+        {/* Candidates Section */}
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-xl font-bold">
+            Candidates
+            <span className="ml-2 bg-blue-600/20 text-blue-400 text-sm px-3 py-1 rounded-full">
+              {candidates.length}
+            </span>
+          </h3>
+
+          {candidates.length > 0 && (
+            <p className="text-gray-400 text-sm">
+              Score ke hisab se sorted ⬇️
+            </p>
+          )}
+        </div>
 
         {candidates.length === 0 ? (
-          <p className="text-gray-400">Koi candidate nahi — CV upload karo!</p>
+          <div className="text-center py-16 bg-gray-900 rounded-2xl border border-gray-800">
+            <p className="text-5xl mb-4">📄</p>
+            <p className="text-gray-400 text-lg">Koi candidate nahi</p>
+            <p className="text-gray-500 text-sm mb-4">CV upload karo analysis ke liye</p>
+            <button
+              onClick={() => navigate(`/jobs/${jobId}/upload`)}
+              className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl transition"
+            >
+              📤 Upload CV
+            </button>
+          </div>
         ) : (
-          <div className="grid gap-4">
-            {candidates.map(c => (
+          <div className="grid gap-3">
+            {candidates.map((c, index) => (
               <div
                 key={c._id}
                 onClick={() => navigate(`/candidates/${c._id}`)}
-                className="bg-gray-900 p-6 rounded-xl border border-gray-800 hover:border-blue-500 cursor-pointer transition"
+                className="bg-gray-900 p-5 rounded-2xl border border-gray-800 hover:border-blue-500/50 cursor-pointer transition group"
               >
                 <div className="flex justify-between items-center">
-                  <div>
-                    <h4 className="font-semibold">{c.name}</h4>
-                    <p className="text-gray-400 text-sm">{c.email}</p>
+                  <div className="flex items-center gap-4">
+                    {/* Rank */}
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm
+                      ${index === 0 ? 'bg-yellow-500/20 text-yellow-400' :
+                        index === 1 ? 'bg-gray-400/20 text-gray-400' :
+                        index === 2 ? 'bg-orange-500/20 text-orange-400' :
+                        'bg-gray-800 text-gray-500'}`}
+                    >
+                      #{index + 1}
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold group-hover:text-blue-400 transition">
+                        {c.name}
+                      </h4>
+                      <p className="text-gray-400 text-sm">{c.email}</p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-blue-400">{c.overall_score}%</p>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      c.recommendation === 'Highly Recommended'
-                        ? 'bg-green-500/20 text-green-400'
-                        : c.recommendation === 'Recommended'
-                        ? 'bg-blue-500/20 text-blue-400'
-                        : 'bg-red-500/20 text-red-400'
-                    }`}>
-                      {c.recommendation}
-                    </span>
+
+                  <div className="flex items-center gap-4">
+                    {/* Score Bar */}
+                    <div className="hidden sm:block w-32">
+                      <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all ${
+                            c.overall_score >= 70 ? 'bg-green-500' :
+                            c.overall_score >= 50 ? 'bg-yellow-500' :
+                            'bg-red-500'
+                          }`}
+                          style={{ width: `${c.overall_score}%` }}
+                        ></div>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <p className={`text-2xl font-bold ${getScoreColor(c.overall_score)}`}>
+                        {c.overall_score}%
+                      </p>
+                      <span className={`text-xs px-2 py-1 rounded-full ${getBadgeStyle(c.recommendation)}`}>
+                        {c.recommendation}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
