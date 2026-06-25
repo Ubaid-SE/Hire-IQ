@@ -3,6 +3,53 @@ const Job = require('../models/Job')
 const axios = require('axios')
 const path = require('path')
 
+// Sab candidates dekhna
+const getAllCandidates = async (req, res) => {
+  try {
+    const userJobs = await Job.find({ 
+      created_by: req.userId 
+    }).select('_id')
+    
+    const jobIds = userJobs.map(j => j._id)
+    
+    const candidates = await Candidate.find({
+      job_id: { $in: jobIds }
+    }).sort({ overall_score: -1 })
+
+    res.json({ candidates })
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: error.message 
+    })
+  }
+}
+
+// Recommended candidates — score >= 60 (recommendation status pe nahi, sirf score pe based)
+const getRecommendedCandidates = async (req, res) => {
+  try {
+    const userJobs = await Job.find({ 
+      created_by: req.userId 
+    }).select('_id')
+    
+    const jobIds = userJobs.map(j => j._id)
+    
+    const candidates = await Candidate.find({
+      job_id: { $in: jobIds },
+      overall_score: { $gte: 60 }
+    }).sort({ overall_score: -1 })
+
+    res.json({ candidates })
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: error.message 
+    })
+  }
+}
+
+
+
 // Single CV Upload
 const uploadCV = async (req, res) => {
   try {
@@ -176,7 +223,7 @@ const uploadBulkCV = async (req, res) => {
   }
 }
 
-// Job ke candidates dekhna
+// Job ke candidates dekhna (job pe click karne se yahi chalta hai)
 const getCandidates = async (req, res) => {
   try {
     const candidates = await Candidate.find({ 
@@ -214,4 +261,11 @@ const getCandidateById = async (req, res) => {
   }
 }
 
-module.exports = { uploadCV, uploadBulkCV, getCandidates, getCandidateById }
+module.exports = {
+  uploadCV,
+  uploadBulkCV,
+  getCandidates,
+  getCandidateById,
+  getAllCandidates,
+  getRecommendedCandidates
+}

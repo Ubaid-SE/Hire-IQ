@@ -1,9 +1,16 @@
+import sys
+import json
 from cv_parser_agent import parse_cv
 from job_match_agent import match_job
 from scoring_agent import score_candidate
 from interview_agent import generate_interview_questions
 from email_agent import write_email
-import json
+
+# Ensure stdout and stderr use UTF-8 to prevent UnicodeEncodeErrors on Windows
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+if hasattr(sys.stderr, 'reconfigure'):
+    sys.stderr.reconfigure(encoding='utf-8')
 
 def process_candidate(pdf_path, job_data):
     """
@@ -22,27 +29,27 @@ def process_candidate(pdf_path, job_data):
     print(f"{'='*50}")
     
     # Step 1 — CV Parse Karo
-    print("\n⏳ Step 1: CV Parsing...")
+    print("\n[Step 1/5] CV Parsing...")
     cv_data = parse_cv(pdf_path)
     print(f" CV Parsed: {cv_data.get('name', 'Unknown')}")
     
     # Step 2 — Job Match Karo
-    print("\n⏳ Step 2: Job Matching...")
+    print("\n[Step 2/5] Job Matching...")
     match_data = match_job(cv_data, job_data)
     print(f" Match: {match_data['overall_match']['percentage']}%")
     
     # Step 3 — Score Do
-    print("\n⏳ Step 3: Scoring...")
+    print("\n[Step 3/5] Scoring...")
     score_data = score_candidate(cv_data, match_data)
     print(f" Score: {score_data['overall_score']}/100")
     
     # Step 4 — Interview Questions
-    print("\n⏳ Step 4: Interview Questions...")
+    print("\n[Step 4/5] Interview Questions...")
     questions_data = generate_interview_questions(cv_data, job_data, match_data)
     print(f" Questions Generated!")
     
     # Step 5 — Email Draft
-    print("\n⏳ Step 5: Email Writing...")
+    print("\n[Step 5/5] Email Writing...")
     email_data = write_email(cv_data, job_data, score_data)
     print(f" Email: {email_data['email_type']}")
     

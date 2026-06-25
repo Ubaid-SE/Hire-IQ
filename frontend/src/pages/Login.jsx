@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../api/axios'
+import loginBg from '../assets/login-bg.jpg'
+import logo from '../assets/ai.png'
 
 function Login() {
   const [isLogin, setIsLogin] = useState(true)
@@ -36,29 +38,39 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
-      {/* Background Glow */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"></div>
+    <div className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden bg-surface-950">
+
+      {/* Background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{ backgroundImage: `url(${loginBg})` }}
+      ></div>
+
+      {/* Dark overlay for readability */}
+      <div className="absolute inset-0 bg-surface-950/80"></div>
+
+      {/* Brand glow accent */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-brand-600/20 rounded-full blur-3xl"></div>
       </div>
 
-      <div className="relative bg-gray-900 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-800">
-        
+      <div className="relative bg-surface-900/90 backdrop-blur-sm p-8 rounded-2xl shadow-2xl shadow-black/50 w-full max-w-md border border-surface-700">
+
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-4">
-            <span className="text-2xl">🧠</span>
+          <div className="inline-flex items-center justify-center w-25 h-25 rounded-2xl mb-4 overflow-hidden border border-brand-500/30 shadow-lg shadow-brand-900/40">
+            <img src={logo} alt="Hire IQ" className="w-full h-full object-cover" />
           </div>
-          <h1 className="text-3xl font-bold text-white">HireIQ</h1>
+          <h1 className="text-3xl font-bold text-white">Hire IQ</h1>
           <p className="text-gray-400 mt-1">AI-Powered Hiring System</p>
         </div>
 
         {/* Tabs */}
-        <div className="flex bg-gray-800 rounded-xl p-1 mb-6">
+        <div className="flex bg-surface-800 rounded-xl p-1 mb-6">
           <button
             onClick={() => setIsLogin(true)}
             className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
-              isLogin ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
+              isLogin ? 'bg-brand-600 text-white' : 'text-gray-400 hover:text-white'
             }`}
           >
             Login
@@ -66,7 +78,7 @@ function Login() {
           <button
             onClick={() => setIsLogin(false)}
             className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
-              !isLogin ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
+              !isLogin ? 'bg-brand-600 text-white' : 'text-gray-400 hover:text-white'
             }`}
           >
             Register
@@ -88,10 +100,18 @@ function Login() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full bg-gray-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
+                  className="w-full bg-surface-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 border border-surface-700"
                   placeholder="Hassan Ahmad"
+                  required
+                />
+              </div>
+              <div>
+                <label className="text-gray-400 text-sm mb-1 block">Company Name</label>
+                <input
+                  type="text"
+                  value={company}
                   onChange={(e) => setCompany(e.target.value)}
-                  className="w-full bg-gray-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
+                  className="w-full bg-surface-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 border border-surface-700"
                   placeholder="Company name"
                   required
                 />
@@ -105,7 +125,7 @@ function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-gray-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
+              className="w-full bg-surface-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 border border-surface-700"
               placeholder="email@company.com"
               required
             />
@@ -117,7 +137,7 @@ function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-gray-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700"
+              className="w-full bg-surface-800 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 border border-surface-700"
               placeholder="********"
               required
             />
@@ -126,7 +146,7 @@ function Login() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white font-semibold p-3 rounded-lg transition disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-brand-900/30"
           >
             {loading ? (
               <>

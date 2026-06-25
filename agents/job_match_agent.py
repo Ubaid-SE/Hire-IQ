@@ -2,6 +2,7 @@ from google import genai
 from dotenv import load_dotenv
 import json
 import os
+from gemini_helper import generate_content_with_retry
 
 load_dotenv()
 
@@ -46,13 +47,20 @@ def match_job(cv_data, job_data):
     }}
     """
     
-    response = client.models.generate_content(
+    response = generate_content_with_retry(
+        client=client,
         model="gemini-3.1-flash-lite",
         contents=prompt
     )
     
     result = response.text.strip()
     result = result.replace("```json", "").replace("```", "").strip()
+    
+    # Robust JSON block extraction
+    start_idx = result.find('{')
+    end_idx = result.rfind('}')
+    if start_idx != -1 and end_idx != -1:
+        result = result[start_idx:end_idx + 1]
     
     match_data = json.loads(result)
     

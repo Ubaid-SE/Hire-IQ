@@ -7,22 +7,22 @@ const {
   uploadCV,
   uploadBulkCV,
   getCandidates,
-  getCandidateById
+  getCandidateById,
+  getAllCandidates,
+  getRecommendedCandidates
 } = require('../controllers/candidateController')
 
-// Single CV upload
-router.post('/upload', authMiddleware, upload.single('cv'), uploadCV)
-
-// Bulk CV upload
-router.post('/upload-bulk', authMiddleware, upload.array('cvs', 10), uploadBulkCV)
-
-// Job ke candidates
+// Specific routes PEHLE (important!)
+router.get('/all', authMiddleware, getAllCandidates)
+router.get('/recommended', authMiddleware, getRecommendedCandidates)
 router.get('/job/:jobId', authMiddleware, getCandidates)
 
-// Ek candidate
-router.get('/:id', authMiddleware, getCandidateById)
+// Upload routes
+router.post('/upload', authMiddleware, upload.single('cv'), uploadCV)
+router.post('/upload-bulk', authMiddleware, upload.array('cvs', 10), uploadBulkCV)
 
-// DELETE /api/candidates/:id
+// Dynamic routes BAAD MEIN
+router.get('/:id', authMiddleware, getCandidateById)
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     await Candidate.findByIdAndDelete(req.params.id)

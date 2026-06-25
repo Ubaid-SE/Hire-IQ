@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API from '../api/axios'
+import logo from '../assets/ai.png'
+
 
 function NewJob() {
   const navigate = useNavigate()
@@ -39,12 +41,13 @@ function NewJob() {
 
       {/* Navbar */}
       <nav className="bg-gray-900 px-8 py-4 flex justify-between items-center border-b border-gray-800">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            🧠
-          </div>
-          <h1 className="text-xl font-bold">HireIQ</h1>
-        </div>
+        {/* Logo */}
+                     <div className="flex items-center gap-2.5 px-2 mb-8">
+                       <div className="w-8 h-8 rounded-xl overflow-hidden border border-brand-500/30 shadow-lg shadow-brand-900/50 shrink-0">
+                         <img src={logo} alt="Hire IQ" className="w-full h-full object-cover" />
+                       </div>
+                       <span className="text-white font-bold text-lg tracking-tight">Hire IQ</span>
+                     </div>
         <button
           onClick={() => navigate('/dashboard')}
           className="text-gray-400 hover:text-white transition"
