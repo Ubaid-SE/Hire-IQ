@@ -1,5 +1,5 @@
 import Sidebar from './Sidebar'
-import dashboardBg from '../assets/login-bg.jpg'
+import dashboardBg from '../assets/pic.png'
 
 function Layout({ children }) {
   return (
@@ -7,13 +7,13 @@ function Layout({ children }) {
       <Sidebar />
 
       <div className="relative flex-1 min-w-0">
-        {/* Subtle fixed background image */}
+        {/* Background image */}
         <div
-          className="fixed inset-0 md:left-64 bg-cover bg-center opacity-[0.07] pointer-events-none"
+          className="fixed inset-0 md:left-64 bg-cover bg-center opacity-100 pointer-events-none"
           style={{ backgroundImage: `url(${dashboardBg})` }}
         ></div>
         {/* Fade overlay so content stays fully readable */}
-        <div className="fixed inset-0 md:left-64 bg-gradient-to-b from-surface-950/60 via-surface-950/85 to-surface-950 pointer-events-none"></div>
+        <div className="fixed inset-0 md:left-64 bg-gradient-to-b from-surface-950/40 via-surface-950/70 to-surface-950/90 pointer-events-none"></div>
 
         <main className="relative z-10">
           {children}
