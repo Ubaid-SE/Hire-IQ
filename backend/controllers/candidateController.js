@@ -81,7 +81,7 @@ const uploadCV = async (req, res) => {
     const absolutePdfPath = path.join(__dirname, '..', req.file.path)
     console.log('PDF Path:', absolutePdfPath)
 
-    const agentResponse = await axios.post('http://localhost:5001/process', {
+    const agentResponse = await axios.post('https://distinguished-charm-production.up.railway.app/process', {
       pdf_path: absolutePdfPath,
       job_data: {
         title: job.title,
@@ -158,7 +158,7 @@ const uploadBulkCV = async (req, res) => {
 
         const absolutePdfPath = path.join(__dirname, '..', file.path)
 
-        const agentResponse = await axios.post('http://localhost:5001/process', {
+        const agentResponse = await axios.post('https://distinguished-charm-production.up.railway.app/process', {
           pdf_path: absolutePdfPath,
           job_data: {
             title: job.title,
