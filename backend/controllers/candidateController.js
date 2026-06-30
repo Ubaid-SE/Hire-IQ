@@ -1,5 +1,5 @@
 const Candidate = require('../models/Candidate')
-const Job = require('../models/Job')
+const Job = require('../models/job')
 const axios = require('axios')
 const path = require('path')
 

@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../middleware/auth')
-const Job = require('../models/Job')
+const Job = require('../models/job')
 const Candidate = require('../models/Candidate')
 
 router.get('/stats', authMiddleware, async (req, res) => {

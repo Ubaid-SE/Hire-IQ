@@ -33,6 +33,13 @@ def process():
             return jsonify({
                 "error": "job_data required hai!"
             }), 400
+
+        # Security — sirf uploads folder allow karo
+        uploads_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'backend', 'uploads'))
+        if not os.path.abspath(pdf_path).startswith(uploads_dir):
+            return jsonify({
+                "error": "Invalid file path!"
+            }), 403
         
         # File exist karti hai?
         if not os.path.exists(pdf_path):
@@ -58,5 +65,5 @@ if __name__ == '__main__':
     app.run(
         host='0.0.0.0',
         port=5001,
-        debug=True
+        debug=False
     )
