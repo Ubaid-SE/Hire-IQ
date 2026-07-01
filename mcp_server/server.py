@@ -144,6 +144,8 @@ def save_candidate_result(
         return f"Error saving: {str(e)}"
 
 if __name__ == "__main__":
-    import sys
+    import uvicorn
     print("HireIQ MCP Server Starting! 🚀")
-    mcp.run(transport="streamable-http", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+    port = int(os.environ.get("PORT", 8000))
+    app = mcp.get_asgi_app()
+    uvicorn.run(app, host="0.0.0.0", port=port)

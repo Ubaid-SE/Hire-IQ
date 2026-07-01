@@ -3,3 +3,4 @@ fastmcp
 pymupdf
 requests
 python-dotenv
+uvicorn
