@@ -2,6 +2,7 @@ const Candidate = require('../models/Candidate')
 const Job = require('../models/job')
 const axios = require('axios')
 const path = require('path')
+const fs = require('fs')
 
 // Sab candidates dekhna
 const getAllCandidates = async (req, res) => {
@@ -18,14 +19,11 @@ const getAllCandidates = async (req, res) => {
 
     res.json({ candidates })
   } catch (error) {
-    res.status(500).json({ 
-      message: 'Server error', 
-      error: error.message 
-    })
+    res.status(500).json({ message: 'Server error', error: error.message })
   }
 }
 
-// Recommended candidates — score >= 60 (recommendation status pe nahi, sirf score pe based)
+// Recommended candidates — score >= 60
 const getRecommendedCandidates = async (req, res) => {
   try {
     const userJobs = await Job.find({ 
@@ -41,14 +39,9 @@ const getRecommendedCandidates = async (req, res) => {
 
     res.json({ candidates })
   } catch (error) {
-    res.status(500).json({ 
-      message: 'Server error', 
-      error: error.message 
-    })
+    res.status(500).json({ message: 'Server error', error: error.message })
   }
 }
-
-
 
 // Single CV Upload
 const uploadCV = async (req, res) => {
@@ -57,16 +50,12 @@ const uploadCV = async (req, res) => {
     console.log('File:', req.file)
 
     if (!req.file) {
-      return res.status(400).json({ 
-        message: 'CV file is required!' 
-      })
+      return res.status(400).json({ message: 'CV file is required!' })
     }
 
     const job = await Job.findById(req.body.job_id)
     if (!job) {
-      return res.status(404).json({ 
-        message: 'Job not found' 
-      })
+      return res.status(404).json({ message: 'Job not found' })
     }
 
     const candidate = new Candidate({
@@ -81,8 +70,12 @@ const uploadCV = async (req, res) => {
     const absolutePdfPath = path.join(__dirname, '..', req.file.path)
     console.log('PDF Path:', absolutePdfPath)
 
+    // PDF ko base64 mein convert karo
+    const pdfBuffer = fs.readFileSync(absolutePdfPath)
+    const pdfBase64 = pdfBuffer.toString('base64')
+
     const agentResponse = await axios.post('https://distinguished-charm-production.up.railway.app/process', {
-      pdf_path: absolutePdfPath,
+      pdf_base64: pdfBase64,
       job_data: {
         title: job.title,
         description: job.description,
@@ -116,10 +109,7 @@ const uploadCV = async (req, res) => {
 
   } catch (error) {
     console.log('Error:', error.message)
-    res.status(500).json({ 
-      message: 'Server error', 
-      error: error.message 
-    })
+    res.status(500).json({ message: 'Server error', error: error.message })
   }
 }
 
@@ -130,22 +120,17 @@ const uploadBulkCV = async (req, res) => {
     console.log('Body:', req.body)
 
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ 
-        message: 'No CV files uploaded!' 
-      })
+      return res.status(400).json({ message: 'No CV files uploaded!' })
     }
 
     const job = await Job.findById(req.body.job_id)
     if (!job) {
-      return res.status(404).json({ 
-        message: 'Job not found' 
-      })
+      return res.status(404).json({ message: 'Job not found' })
     }
 
     const results = []
     const errors = []
 
-    // Har CV ko process karo
     for (const file of req.files) {
       try {
         const candidate = new Candidate({
@@ -158,8 +143,12 @@ const uploadBulkCV = async (req, res) => {
 
         const absolutePdfPath = path.join(__dirname, '..', file.path)
 
+        // PDF ko base64 mein convert karo
+        const pdfBuffer = fs.readFileSync(absolutePdfPath)
+        const pdfBase64 = pdfBuffer.toString('base64')
+
         const agentResponse = await axios.post('https://distinguished-charm-production.up.railway.app/process', {
-          pdf_path: absolutePdfPath,
+          pdf_base64: pdfBase64,
           job_data: {
             title: job.title,
             description: job.description,
@@ -198,10 +187,7 @@ const uploadBulkCV = async (req, res) => {
 
       } catch (err) {
         console.log('File Error:', file.originalname, err.message)
-        errors.push({
-          file: file.originalname,
-          error: err.message
-        })
+        errors.push({ file: file.originalname, error: err.message })
       }
     }
 
@@ -216,14 +202,11 @@ const uploadBulkCV = async (req, res) => {
 
   } catch (error) {
     console.log('Error:', error.message)
-    res.status(500).json({ 
-      message: 'Server error', 
-      error: error.message 
-    })
+    res.status(500).json({ message: 'Server error', error: error.message })
   }
 }
 
-// Job ke candidates dekhna (job pe click karne se yahi chalta hai)
+// Job ke candidates dekhna
 const getCandidates = async (req, res) => {
   try {
     const candidates = await Candidate.find({ 
@@ -233,10 +216,7 @@ const getCandidates = async (req, res) => {
     res.json({ candidates })
 
   } catch (error) {
-    res.status(500).json({ 
-      message: 'Server error', 
-      error: error.message 
-    })
+    res.status(500).json({ message: 'Server error', error: error.message })
   }
 }
 
@@ -246,18 +226,13 @@ const getCandidateById = async (req, res) => {
     const candidate = await Candidate.findById(req.params.id)
 
     if (!candidate) {
-      return res.status(404).json({ 
-        message: 'Candidate not found' 
-      })
+      return res.status(404).json({ message: 'Candidate not found' })
     }
 
     res.json({ candidate })
 
   } catch (error) {
-    res.status(500).json({ 
-      message: 'Server error', 
-      error: error.message 
-    })
+    res.status(500).json({ message: 'Server error', error: error.message })
   }
 }
 

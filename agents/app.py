@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from orchestrator import process_candidate
 import os
+import base64
+import tempfile
 
 app = Flask(__name__)
 CORS(app)
@@ -17,31 +19,34 @@ def health():
 @app.route('/process', methods=['POST'])
 def process():
     try:
-        # Request se data lo
         data = request.json
         
-        pdf_path = data.get('pdf_path')
+        pdf_base64 = data.get('pdf_base64')
         job_data = data.get('job_data')
         
         # Validation
-        if not pdf_path:
+        if not pdf_base64:
             return jsonify({
-                "error": "pdf_path required hai!"
+                "error": "pdf_base64 required hai!"
             }), 400
             
         if not job_data:
             return jsonify({
                 "error": "job_data required hai!"
             }), 400
-        
-        # File exist karti hai?
-        if not os.path.exists(pdf_path):
-            return jsonify({
-                "error": "CV file nahi mili!"
-            }), 404
-        
-        # Process karo
-        result = process_candidate(pdf_path, job_data)
+
+        # Base64 decode karke temp file banao
+        pdf_bytes = base64.b64decode(pdf_base64)
+        with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as tmp:
+            tmp.write(pdf_bytes)
+            tmp_path = tmp.name
+
+        try:
+            # Process karo
+            result = process_candidate(tmp_path, job_data)
+        finally:
+            # Temp file delete karo
+            os.unlink(tmp_path)
         
         return jsonify({
             "success": True,
