@@ -7,6 +7,8 @@ import os
 
 load_dotenv()
 
+BACKEND_URL = os.environ.get("BACKEND_URL", "https://hire-iq-production.up.railway.app")
+
 # MCP Server banao
 mcp = FastMCP("HireIQ MCP Server")
 
@@ -29,7 +31,7 @@ def get_job_details(job_id: str) -> str:
     """Job ki details lo backend se"""
     try:
         response = requests.get(
-            f"http://localhost:5000/api/jobs/{job_id}"
+            f"{BACKEND_URL}/api/jobs/{job_id}"
         )
         return json.dumps(response.json())
     except Exception as e:
@@ -131,7 +133,7 @@ def save_candidate_result(
     """Candidate ka result save karo"""
     try:
         response = requests.patch(
-            f"http://localhost:5000/api/candidates/{candidate_id}",
+            f"{BACKEND_URL}/api/candidates/{candidate_id}",
             json={
                 "overall_score": score,
                 "recommendation": recommendation
@@ -142,5 +144,6 @@ def save_candidate_result(
         return f"Error saving: {str(e)}"
 
 if __name__ == "__main__":
+    import sys
     print("HireIQ MCP Server Starting! 🚀")
-    mcp.run()
+    mcp.run(transport="streamable-http", host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
