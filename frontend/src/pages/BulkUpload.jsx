@@ -12,6 +12,8 @@ function BulkUpload() {
   const [results, setResults] = useState(null)
   const [dragOver, setDragOver] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [isPremium, setIsPremium] = useState(false)
+  const [showPremiumModal, setShowPremiumModal] = useState(false)
 
   const handleFiles = (selectedFiles) => {
     const pdfs = Array.from(selectedFiles).filter(
@@ -28,6 +30,10 @@ function BulkUpload() {
   }
 
   const handleUpload = async () => {
+    if (!isPremium) {
+      setShowPremiumModal(true)
+      return
+    }
     if (files.length === 0) return alert('Select some CVs to upload!')
     setLoading(true)
     setProgress(0)
@@ -69,6 +75,62 @@ function BulkUpload() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
 
+      {/* Premium Modal */}
+      {showPremiumModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-gray-900 border border-yellow-500/30 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div className="text-center mb-6">
+              <p className="text-5xl mb-4">👑</p>
+              <h3 className="text-2xl font-bold text-white mb-2">Premium Feature</h3>
+              <p className="text-gray-400 text-sm">
+                Bulk CV Upload is available for Premium users only. Upgrade to process multiple CVs at once with AI.
+              </p>
+            </div>
+
+            {/* Features */}
+            <div className="bg-gray-800 rounded-xl p-4 mb-6 space-y-3">
+              <p className="text-yellow-400 font-semibold text-sm mb-3">✨ Premium includes:</p>
+              <div className="flex items-center gap-3 text-sm text-gray-300">
+                <span className="text-green-400">✓</span> Bulk CV Upload (up to 50 CVs)
+              </div>
+              <div className="flex items-center gap-3 text-sm text-gray-300">
+                <span className="text-green-400">✓</span> Priority AI Processing
+              </div>
+              <div className="flex items-center gap-3 text-sm text-gray-300">
+                <span className="text-green-400">✓</span> Advanced Analytics & Reports
+              </div>
+              <div className="flex items-center gap-3 text-sm text-gray-300">
+                <span className="text-green-400">✓</span> Unlimited Job Postings
+              </div>
+            </div>
+
+            {/* Price */}
+            <div className="text-center mb-6">
+              <p className="text-gray-400 text-sm">Starting at</p>
+              <p className="text-4xl font-bold text-white">$29<span className="text-lg text-gray-400">/mo</span></p>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  setIsPremium(true)
+                  setShowPremiumModal(false)
+                }}
+                className="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold p-4 rounded-xl transition"
+              >
+                👑 Upgrade to Premium
+              </button>
+              <button
+                onClick={() => setShowPremiumModal(false)}
+                className="w-full bg-gray-800 hover:bg-gray-700 text-gray-400 p-3 rounded-xl transition text-sm"
+              >
+                Maybe Later
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Navbar */}
       <nav className="bg-gray-900 px-8 py-1 flex justify-between items-center border-b border-gray-800">
        {/* Logo */}
@@ -91,11 +153,35 @@ function BulkUpload() {
         {!results ? (
           <>
             <div className="mb-8">
-              <h2 className="text-2xl font-bold">Bulk CV Upload 📦</h2>
+              <div className="flex items-center gap-3">
+                <h2 className="text-2xl font-bold">Bulk CV Upload 📦</h2>
+                <span className="bg-yellow-500/20 text-yellow-400 border border-yellow-500/30 text-xs px-3 py-1 rounded-full font-semibold">
+                  👑 Premium
+                </span>
+              </div>
               <p className="text-gray-400 mt-1">
                 Upload multiple CV at a time — AI will analyze!
               </p>
             </div>
+
+            {/* Premium Banner */}
+            {!isPremium && (
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-5 mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <span className="text-3xl">👑</span>
+                  <div>
+                    <p className="font-semibold text-yellow-400">Premium Feature</p>
+                    <p className="text-gray-400 text-sm">Upgrade to unlock Bulk CV Upload</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowPremiumModal(true)}
+                  className="bg-yellow-500 hover:bg-yellow-400 text-black font-bold px-5 py-2 rounded-xl transition text-sm"
+                >
+                  Upgrade
+                </button>
+              </div>
+            )}
 
             {/* Drop Zone */}
             <div
@@ -104,15 +190,26 @@ function BulkUpload() {
               onDrop={(e) => {
                 e.preventDefault()
                 setDragOver(false)
+                if (!isPremium) { setShowPremiumModal(true); return }
                 handleFiles(e.dataTransfer.files)
               }}
-              onClick={() => document.getElementById('bulkInput').click()}
-              className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition mb-6 ${
-                dragOver
+              onClick={() => {
+                if (!isPremium) { setShowPremiumModal(true); return }
+                document.getElementById('bulkInput').click()
+              }}
+              className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition mb-6 relative ${
+                !isPremium
+                  ? 'border-gray-700 opacity-50'
+                  : dragOver
                   ? 'border-blue-500 bg-blue-500/10'
                   : 'border-gray-700 hover:border-blue-500 hover:bg-blue-500/5'
               }`}
             >
+              {!isPremium && (
+                <div className="absolute inset-0 flex items-center justify-center rounded-2xl z-10">
+                  <span className="text-4xl">🔒</span>
+                </div>
+              )}
               <input
                 id="bulkInput"
                 type="file"
@@ -206,17 +303,21 @@ function BulkUpload() {
             <button
               onClick={handleUpload}
               disabled={loading || files.length === 0}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-4 rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-3"
+              className={`w-full font-semibold p-4 rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-3 ${
+                isPremium
+                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                  : 'bg-yellow-500 hover:bg-yellow-400 text-black'
+              }`}
             >
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   AI is Analyzing... ({files.length} CVs)
                 </>
+              ) : isPremium ? (
+                <>🚀 {files.length} Upload CVs & Analyze</>
               ) : (
-                <>
-                  🚀 {files.length} Upload CVs & Analyze
-                </>
+                <>👑 Upgrade to Premium to Upload</>
               )}
             </button>
           </>
