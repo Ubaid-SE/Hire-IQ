@@ -55,7 +55,7 @@ function AllCandidates() {
         type="text"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="🔍 Candidate search karo..."
+        placeholder="🔍 Search Candidate"
         className="w-full bg-gray-900 border border-gray-800 text-white p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 mb-6"
       />
 
@@ -66,7 +66,7 @@ function AllCandidates() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-20 bg-gray-900 rounded-2xl border border-gray-800">
           <p className="text-5xl mb-4">📄</p>
-          <p className="text-gray-400">Koi candidate nahi mila</p>
+          <p className="text-gray-400">No candidates found</p>
         </div>
       ) : (
         <div className="grid gap-3">

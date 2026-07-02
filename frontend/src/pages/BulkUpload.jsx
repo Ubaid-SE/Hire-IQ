@@ -18,7 +18,7 @@ function BulkUpload() {
       f => f.type === 'application/pdf'
     )
     if (pdfs.length !== selectedFiles.length) {
-      alert('Sirf PDF files allowed hain!')
+      alert('Only PDF files are allowed!')
     }
     setFiles(prev => [...prev, ...pdfs])
   }
@@ -28,7 +28,7 @@ function BulkUpload() {
   }
 
   const handleUpload = async () => {
-    if (files.length === 0) return alert('CVs select karo!')
+    if (files.length === 0) return alert('Select some CVs to upload!')
     setLoading(true)
     setProgress(0)
 

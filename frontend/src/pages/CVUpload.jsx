@@ -14,7 +14,7 @@ function CVUpload() {
 
   const handleUpload = async (e) => {
     e.preventDefault()
-    if (!file) return alert('CV select karo!')
+    if (!file) return alert('Select a CV to upload!')
     setLoading(true)
 
     try {
@@ -41,7 +41,7 @@ function CVUpload() {
     if (droppedFile?.type === 'application/pdf') {
       setFile(droppedFile)
     } else {
-      alert('Sirf PDF file allowed hai!')
+      alert('Only PDF files are allowed!')
     }
   }
 
@@ -166,7 +166,7 @@ function CVUpload() {
                 ) : (
                   <>
                     <span>🚀</span>
-                    <span>Upload & Analyze CV</span>
+                    <span>Analyze CV</span>
                   </>
                 )}
               </button>
@@ -284,13 +284,13 @@ function CVUpload() {
                 onClick={() => setResult(null)}
                 className="bg-gray-800 hover:bg-gray-700 p-4 rounded-xl transition font-semibold"
               >
-                📤 Aur CV Upload karo
+                📤 Upload more CVs
               </button>
               <button
                 onClick={() => navigate(`/candidates/${result._id}`)}
                 className="bg-blue-600 hover:bg-blue-700 p-4 rounded-xl transition font-semibold"
               >
-                📊 Full Analysis Dekho
+                📊 Full Analysis
               </button>
             </div>
           </div>

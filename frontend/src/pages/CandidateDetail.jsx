@@ -32,7 +32,7 @@ function CandidateDetail() {
   }
 
   const deleteCandidate = async () => {
-    if (!confirm('Candidate delete karna chahte ho?')) return
+    if (!confirm('Are you sure you want to delete this candidate?')) return
     try {
       await API.delete(`/candidates/${id}`)
       navigate(-1)
@@ -91,12 +91,12 @@ function CandidateDetail() {
     <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
       <div className="text-center">
         <p className="text-5xl mb-4">😕</p>
-        <p className="text-gray-400">Candidate nahi mila!</p>
+        <p className="text-gray-400">Candidate not found!</p>
         <button
           onClick={() => navigate(-1)}
           className="mt-4 bg-blue-600 px-6 py-2 rounded-xl"
         >
-          Back Jao
+          Go Back
         </button>
       </div>
     </div>
