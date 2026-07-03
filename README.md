@@ -5,12 +5,46 @@
 HireIQ is a full-stack AI hiring assistant that automates the entire candidate screening process. Upload a CV, and five specialized AI agents analyze it, score the candidate, generate interview questions, and draft a personalized email — all in seconds.
 
 ---
-
 ## 🎥 Demo
 
+[![HireIQ Demo](https://img.youtube.com/vi/ylRvV2yUX7Q/0.jpg)](https://youtu.be/ylRvV2yUX7Q)
 
+👉 [Watch Demo Video](https://youtu.be/ylRvV2yUX7Q)
 
 ---
+
+## 🌐 Live URLs
+
+|
+ Service
+| 
+URL 
+|
+|
+---
+|
+---
+|
+| 
+Frontend 
+| 
+https://hire-iq-sigma.vercel.app 
+|
+| 
+Backend 
+| 
+https://hire-iq-production.up.railway.app 
+|
+| 
+Agents 
+| 
+https://distinguished-charm-production.up.railway.app 
+|
+| 
+MCP Server 
+| 
+https://practical-eagerness-production.up.railway.app 
+|
 
 ## 🏗️ Architecture
 
