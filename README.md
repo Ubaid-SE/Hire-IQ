@@ -7,10 +7,10 @@ HireIQ is a full-stack AI hiring assistant that automates the entire candidate s
 ---
 ## 🎥 Demo
 
-[![HireIQ Demo](https://img.youtube.com/vi/ylRvV2yUX7Q/0.jpg)](https://youtu.be/ylRvV2yUX7Q)
+![HireIQ Demo]
 
-👉 [Watch Demo Video](https://youtu.be/ylRvV2yUX7Q)
 
+👉 [Watch Demo Video](https://youtu.be/fIUC7IfGtaM?si=5BHEkFxsdevc2hQJ)
 ---
 
 ## 🌐 Live URLs
