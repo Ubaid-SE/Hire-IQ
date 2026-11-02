@@ -1,8 +1,34 @@
 const Candidate = require('../models/Candidate')
 const Job = require('../models/job')
 const axios = require('axios')
-const path = require('path')
-const fs = require('fs')
+
+// Agent server ko CV bhejo aur result lo
+const callAgent = async (file, job) => {
+  const agentUrl = (process.env.AGENT_URL || '').replace(/\/$/, '')
+  if (!agentUrl) {
+    throw new Error('AGENT_URL is not configured')
+  }
+
+  // PDF buffer ko base64 mein convert karo
+  const pdfBase64 = file.buffer.toString('base64')
+
+  try {
+    const agentResponse = await axios.post(`${agentUrl}/process`, {
+      pdf_base64: pdfBase64,
+      job_data: {
+        title: job.title,
+        description: job.description,
+        required_skills: job.required_skills,
+        experience_required: job.experience_required,
+        company: 'HireIQ'
+      }
+    })
+    return agentResponse.data.result
+  } catch (err) {
+    // Agent ka asli error message upar bhejo
+    throw new Error(err.response?.data?.error || err.message)
+  }
+}
 
 // Sab candidates dekhna
 const getAllCandidates = async (req, res) => {
@@ -47,7 +73,7 @@ const getRecommendedCandidates = async (req, res) => {
 const uploadCV = async (req, res) => {
   try {
     console.log('Body:', req.body)
-    console.log('File:', req.file)
+    console.log('File:', req.file?.originalname, req.file?.size)
 
     if (!req.file) {
       return res.status(400).json({ message: 'CV file is required!' })
@@ -60,32 +86,14 @@ const uploadCV = async (req, res) => {
 
     const candidate = new Candidate({
       job_id: req.body.job_id,
-      cv_file: req.file.path,
+      cv_file: req.file.originalname,
       name: '',
       email: ''
     })
 
     await candidate.save()
 
-    const absolutePdfPath = path.join(__dirname, '..', req.file.path)
-    console.log('PDF Path:', absolutePdfPath)
-
-    // PDF ko base64 mein convert karo
-    const pdfBuffer = fs.readFileSync(absolutePdfPath)
-    const pdfBase64 = pdfBuffer.toString('base64')
-
-    const agentResponse = await axios.post('https://distinguished-charm-production.up.railway.app/process', {
-      pdf_base64: pdfBase64,
-      job_data: {
-        title: job.title,
-        description: job.description,
-        required_skills: job.required_skills,
-        experience_required: job.experience_required,
-        company: 'HireIQ'
-      }
-    })
-
-    const result = agentResponse.data.result
+    const result = await callAgent(req.file, job)
 
     candidate.name = result.candidate_info.name || ''
     candidate.email = result.candidate_info.email || ''
@@ -116,7 +124,7 @@ const uploadCV = async (req, res) => {
 // Bulk CV Upload
 const uploadBulkCV = async (req, res) => {
   try {
-    console.log('Files:', req.files)
+    console.log('Files:', req.files?.map(f => f.originalname))
     console.log('Body:', req.body)
 
     if (!req.files || req.files.length === 0) {
@@ -135,30 +143,13 @@ const uploadBulkCV = async (req, res) => {
       try {
         const candidate = new Candidate({
           job_id: req.body.job_id,
-          cv_file: file.path,
+          cv_file: file.originalname,
           name: '',
           email: ''
         })
         await candidate.save()
 
-        const absolutePdfPath = path.join(__dirname, '..', file.path)
-
-        // PDF ko base64 mein convert karo
-        const pdfBuffer = fs.readFileSync(absolutePdfPath)
-        const pdfBase64 = pdfBuffer.toString('base64')
-
-        const agentResponse = await axios.post('https://distinguished-charm-production.up.railway.app/process', {
-          pdf_base64: pdfBase64,
-          job_data: {
-            title: job.title,
-            description: job.description,
-            required_skills: job.required_skills,
-            experience_required: job.experience_required,
-            company: 'HireIQ'
-          }
-        })
-
-        const result = agentResponse.data.result
+        const result = await callAgent(file, job)
 
         candidate.name = result.candidate_info.name || ''
         candidate.email = result.candidate_info.email || ''

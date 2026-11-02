@@ -8,17 +8,43 @@ dotenv.config()
 const app = express()
 
 app.use(cors())
-
-// Pehle static files
-app.use('/uploads', express.static('uploads'))
-
-// Phir JSON middleware
 app.use(express.json())
 
-// MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB Connected! ✅'))
-  .catch((error) => console.log('MongoDB Error:', error))
+// MongoDB Connection (serverless ke liye cached)
+let cached = global._mongoose
+if (!cached) {
+  cached = global._mongoose = { conn: null, promise: null }
+}
+
+const connectDB = async () => {
+  if (cached.conn) return cached.conn
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(process.env.MONGODB_URI, {
+      bufferCommands: false
+    })
+  }
+
+  try {
+    cached.conn = await cached.promise
+  } catch (error) {
+    cached.promise = null
+    throw error
+  }
+
+  return cached.conn
+}
+
+// Har request se pehle DB connected hona chahiye
+app.use(async (req, res, next) => {
+  try {
+    await connectDB()
+    next()
+  } catch (error) {
+    console.log('MongoDB Error:', error)
+    res.status(500).json({ message: 'Database connection failed' })
+  }
+})
 
 // Routes
 const authRoutes = require('./routes/auth')
@@ -36,8 +62,13 @@ app.get('/api', (req, res) => {
   res.json({ message: 'HireIQ Backend Chal Raha Hai! 🚀' })
 })
 
-const PORT = process.env.PORT || 5000
+// Local run ke liye (Vercel pe ye nahi chalta)
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000
+  app.listen(PORT, () => {
+    console.log(`Server chal raha hai port ${PORT} pe`)
+  })
+}
 
-app.listen(PORT, () => {
-  console.log(`Server chal raha hai port ${PORT} pe`)
-})
+// Vercel isi export ko uthata hai
+module.exports = app

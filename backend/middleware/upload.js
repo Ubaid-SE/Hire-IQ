@@ -1,20 +1,7 @@
 const multer = require('multer')
-const fs = require('fs')
 
-// Uploads folder banao agar nahi hai
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads')
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/')
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + '-' + file.originalname
-    cb(null, uniqueName)
-  }
-})
+// Vercel pe disk writable nahi hoti, isliye file memory (RAM) me rakhte hain
+const storage = multer.memoryStorage()
 
 const fileFilter = (req, file, cb) => {
   console.log('File mimetype:', file.mimetype)
@@ -28,7 +15,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }
+  limits: { fileSize: 3 * 1024 * 1024 } // 3MB (Vercel 4.5MB body limit + base64 overhead)
 })
 
 module.exports = upload

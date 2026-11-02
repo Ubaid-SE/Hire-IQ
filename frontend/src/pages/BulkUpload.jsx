@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import API from '../api/axios'
 import logo from '../assets/ai.png'
 
+const MAX_PARALLEL = 2                 // ek waqt me max 2 CVs process hongi
+const MAX_FILES = 10                   // ek baar me max 10 CVs
+const MAX_FILE_SIZE = 3 * 1024 * 1024  // 3MB (Vercel body limit)
 
 function BulkUpload() {
   const navigate = useNavigate()
@@ -12,17 +15,31 @@ function BulkUpload() {
   const [results, setResults] = useState(null)
   const [dragOver, setDragOver] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [statuses, setStatuses] = useState([])
   const [isPremium, setIsPremium] = useState(false)
   const [showPremiumModal, setShowPremiumModal] = useState(false)
 
   const handleFiles = (selectedFiles) => {
-    const pdfs = Array.from(selectedFiles).filter(
-      f => f.type === 'application/pdf'
-    )
-    if (pdfs.length !== selectedFiles.length) {
+    if (loading) return
+
+    const incoming = Array.from(selectedFiles)
+    const pdfs = incoming.filter(f => f.type === 'application/pdf')
+    if (pdfs.length !== incoming.length) {
       alert('Only PDF files are allowed!')
     }
-    setFiles(prev => [...prev, ...pdfs])
+
+    const tooBig = pdfs.filter(f => f.size > MAX_FILE_SIZE)
+    if (tooBig.length > 0) {
+      alert(`These files are bigger than 3MB and were skipped:\n${tooBig.map(f => f.name).join('\n')}`)
+    }
+    const valid = pdfs.filter(f => f.size <= MAX_FILE_SIZE)
+
+    const room = Math.max(MAX_FILES - files.length, 0)
+    if (valid.length > room) {
+      alert(`You can upload max ${MAX_FILES} CVs at a time.`)
+    }
+
+    setFiles(prev => [...prev, ...valid.slice(0, room)])
   }
 
   const removeFile = (index) => {
@@ -35,27 +52,82 @@ function BulkUpload() {
       return
     }
     if (files.length === 0) return alert('Select some CVs to upload!')
+
+    const queue = [...files]
+    const total = queue.length
+    const successList = new Array(total).fill(null)
+    const errorList = new Array(total).fill(null)
+    let nextIndex = 0
+    let completed = 0
+
     setLoading(true)
     setProgress(0)
+    setStatuses(queue.map(() => 'pending'))
 
-    try {
-      const formData = new FormData()
-      files.forEach(file => formData.append('cvs', file))
-      formData.append('job_id', jobId)
-
-      const res = await API.post('/candidates/upload-bulk', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (e) => {
-          setProgress(Math.round((e.loaded * 100) / e.total))
-        }
-      })
-
-      setResults(res.data)
-    } catch (err) {
-      alert('Error: ' + err.message)
-    } finally {
-      setLoading(false)
+    const updateStatus = (i, status) => {
+      setStatuses(prev => prev.map((s, idx) => (idx === i ? status : s)))
     }
+
+    // Har worker queue se agli CV uthata hai, jab tak queue khatam na ho
+    const worker = async () => {
+      while (true) {
+        const i = nextIndex++
+        if (i >= total) return
+
+        const file = queue[i]
+        updateStatus(i, 'processing')
+
+        try {
+          const formData = new FormData()
+          formData.append('cv', file)
+          formData.append('job_id', jobId)
+
+          const res = await API.post('/candidates/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          })
+
+          const c = res.data.candidate
+          successList[i] = {
+            file: file.name,
+            candidate: {
+              id: c._id,
+              name: c.name,
+              score: c.overall_score,
+              recommendation: c.recommendation
+            }
+          }
+          updateStatus(i, 'done')
+        } catch (err) {
+          errorList[i] = {
+            file: file.name,
+            error:
+              err.response?.data?.error ||
+              err.response?.data?.message ||
+              err.message
+          }
+          updateStatus(i, 'error')
+        } finally {
+          completed++
+          setProgress(Math.round((completed * 100) / total))
+        }
+      }
+    }
+
+    await Promise.all(
+      Array.from({ length: Math.min(MAX_PARALLEL, total) }, worker)
+    )
+
+    const okResults = successList.filter(Boolean)
+    const failedResults = errorList.filter(Boolean)
+
+    setResults({
+      total,
+      successful: okResults.length,
+      failed: failedResults.length,
+      results: okResults,
+      errors: failedResults
+    })
+    setLoading(false)
   }
 
   const getScoreColor = (score) => {
@@ -226,7 +298,7 @@ function BulkUpload() {
                 Or Click To Choose
               </p>
               <p className="text-gray-600 text-xs mt-3">
-                Max 10 PDFs — Each file max 5MB
+                Max 10 PDFs — Each file max 3MB
               </p>
             </div>
 
@@ -242,7 +314,8 @@ function BulkUpload() {
                   </h3>
                   <button
                     onClick={() => setFiles([])}
-                    className="text-red-400 text-sm hover:text-red-300"
+                    disabled={loading}
+                    className="text-red-400 text-sm hover:text-red-300 disabled:opacity-40"
                   >
                     Remove All
                   </button>
@@ -265,7 +338,8 @@ function BulkUpload() {
                       </div>
                       <button
                         onClick={() => removeFile(i)}
-                        className="text-red-400 hover:text-red-300 text-sm"
+                        disabled={loading}
+                        className="text-red-400 hover:text-red-300 text-sm disabled:opacity-40"
                       >
                         ✕
                       </button>
@@ -289,12 +363,32 @@ function BulkUpload() {
                   ></div>
                 </div>
                 <div className="space-y-2">
-                  {files.map((file, i) => (
-                    <div key={i} className="flex items-center gap-3 text-sm">
-                      <div className="w-4 h-4 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>
-                      <span className="text-gray-400">{file.name}</span>
-                    </div>
-                  ))}
+                  {files.map((file, i) => {
+                    const status = statuses[i] || 'pending'
+                    return (
+                      <div key={i} className="flex items-center gap-3 text-sm">
+                        {status === 'processing' && (
+                          <div className="w-4 h-4 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin"></div>
+                        )}
+                        {status === 'done' && (
+                          <span className="w-4 text-center text-green-400">✓</span>
+                        )}
+                        {status === 'error' && (
+                          <span className="w-4 text-center text-red-400">✕</span>
+                        )}
+                        {status === 'pending' && (
+                          <span className="w-4 text-center text-gray-600">•</span>
+                        )}
+                        <span className="text-gray-400">{file.name}</span>
+                        <span className="text-gray-600 text-xs ml-auto">
+                          {status === 'processing' && 'Analyzing...'}
+                          {status === 'done' && 'Done'}
+                          {status === 'error' && 'Failed'}
+                          {status === 'pending' && 'Waiting'}
+                        </span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}
